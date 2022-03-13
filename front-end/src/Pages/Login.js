@@ -1,12 +1,34 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import BreadCrumb from '../Components/BreadCrumb'
 import Footer from '../Components/Footer'
 import Header from '../Components/Header'
 import PreLoader from '../Components/PreLoader'
 import Search from '../Components/Search'
+import axios from 'axios'
+import { toast } from 'react-toastify'
+import { setAuthentication, isAuthenticated } from '../Helpers/auth'
 
 const Login = () => {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+
+  const navigate = useNavigate()
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    const user = { email, password }
+    try {
+      console.log('hello')
+      const res = await axios.post('http://localhost:5000/login', user)
+      setAuthentication(res.data.token, res.data.user)
+      toast.success('Login successfull')
+      navigate('/')
+    } catch (error) {
+      toast.error('Wrong username or password')
+    }
+  }
+
   return (
     <React.Fragment>
       {/* <PreLoader /> */}
@@ -18,13 +40,23 @@ const Login = () => {
             <div className='col-lg-6'>
               <div className='login__form'>
                 <h3>Login</h3>
-                <form action='#'>
+                <form onSubmit={handleSubmit}>
                   <div className='input__item'>
-                    <input type='text' placeholder='Email address' />
+                    <input
+                      type='email'
+                      placeholder='Email address'
+                      name='email'
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
                     <span className='icon_mail'></span>
                   </div>
                   <div className='input__item'>
-                    <input type='text' placeholder='Password' />
+                    <input
+                      type='password'
+                      placeholder='Password'
+                      name='password'
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
                     <span className='icon_lock'></span>
                   </div>
                   <button type='submit' className='site-btn'>
