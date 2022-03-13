@@ -1,7 +1,20 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { getCookie } from '../Helpers/cookies'
+import { deleteCookie } from '../Helpers/cookies'
+import { getLocalStorage } from '../Helpers/localStorage'
+import { toast } from 'react-toastify'
 
 const Header = () => {
+  const navigate = useNavigate()
+  const token = getCookie('token')
+  const user_logout = () => {
+    deleteCookie('token')
+    localStorage.clear()
+    toast.success('You successfully logout')
+    navigate('/')
+  }
+
   return (
     <>
       {/* <!-- Header Section Begin --> */}
@@ -62,9 +75,15 @@ const Header = () => {
                 <Link to='#' className='search-switch'>
                   <span className='icon_search'></span>
                 </Link>
-                <Link to='./login.html'>
-                  <span className='icon_profile'></span>
-                </Link>
+                {token ? (
+                  <button onClick={user_logout}>
+                    <span className='icon_profile'></span>
+                  </button>
+                ) : (
+                  <Link to='/signin'>
+                    <span className='icon_profile'></span>
+                  </Link>
+                )}
               </div>
             </div>
           </div>
